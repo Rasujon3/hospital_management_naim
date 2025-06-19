@@ -15,7 +15,21 @@ return new class extends Migration
     {
         Schema::create('time_slots', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
+            $table->date('date');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->boolean('is_available')->default(true);
+            $table->foreignId('appointment_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
+
+            // Indexes for better performance
+            $table->index('doctor_id');
+            $table->index('date');
+            $table->index('is_available');
+            $table->index('appointment_id');
+            $table->index(['doctor_id', 'date', 'is_available']);
+            $table->index(['doctor_id', 'date', 'start_time']);
         });
     }
 
