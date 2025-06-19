@@ -3,26 +3,47 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class HomeController extends Controller
 {
     /**
-     * Create a new controller instance.
+     * Display the homepage.
      *
-     * @return void
+     * @return \Illuminate\View\View
      */
-    public function __construct()
+    public function index(): View
     {
-        $this->middleware('auth');
+        return view('home.index'); // resources/views/home/index.blade.php
     }
 
     /**
-     * Show the application dashboard.
+     * Display the About page.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\View\View
      */
-    public function index()
+    public function about(): View
     {
-        return view('home');
+        return view('home.about'); // resources/views/home/about.blade.php
+    }
+
+    /**
+     * Display the Services page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function services(): View
+    {
+        return view('home.services'); // resources/views/home/services.blade.php
+    }
+
+    /**
+     * Display the Contact page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function contact(): View
+    {
+        return view('home.contact'); // resources/views/home/contact.blade.php
     }
 }
