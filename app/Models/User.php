@@ -2,31 +2,34 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+use App\Models\DoctorSchedule;
+use App\Models\Appointment;
+use App\Models\NotificationSetting;
+use App\Models\Patient;
+
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'phone',
+        'address',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * The attributes that should be hidden for arrays.
      */
     protected $hidden = [
         'password',
@@ -34,11 +37,49 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * The attributes that should be cast to native types.
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Check if user has a specific role.
+     */
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    /**
+     * Get all appointments (if doctor or patient).
+     */
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, $this->role === 'doctor' ? 'doctor_id' : 'patient_id');
+    }
+
+    /**
+     * If doctor, get schedules.
+     */
+    public function doctorSchedules()
+    {
+        return $this->hasMany(DoctorSchedule::class, 'doctor_id');
+    }
+
+    /**
+     * If patient, get extended profile.
+     */
+    public function patient()
+    {
+        return $this->hasOne(Patient::class);
+    }
+
+    /**
+     * Notification Settings
+     */
+    public function notificationSettings()
+    {
+        return $this->hasMany(NotificationSetting::class);
+    }
 }
